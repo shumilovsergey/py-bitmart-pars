@@ -36,7 +36,6 @@ def get():
 
     finally:
         driver.quit()
-        print("log: get err")
     return soup, err
 
 def tg_alarm(text):
