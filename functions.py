@@ -7,11 +7,16 @@ from const import TG_TOKEN
 from const import FILE_PATH
 import requests
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.keys import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+
+
+
 
 def get():
     r = ""
@@ -20,17 +25,18 @@ def get():
     chrome_options.add_argument("--no-sandbox") 
     chrome_options.add_argument("--headless") 
     chrome_options.add_argument("--disable-dev-shm-usage") 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
     try:
         driver.get(URL)
         r = driver.page_source
         soup = BeautifulSoup(r, 'html.parser')
         err = False
+        print("log: get ok")
 
     finally:
         driver.quit()
-    
+        print("log: get err")
     return soup, err
 
 def tg_alarm(text):
@@ -39,6 +45,7 @@ def tg_alarm(text):
         "text": text
     }
     r = requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data)
+    print("log: tg_alarm ok")
     return 
 
 def html_pars(soup):
@@ -52,6 +59,7 @@ def html_pars(soup):
         nft = {'name':name, 'price':price}
         nfts_unsort.append(nft)
 
+    print("log: html_pars ok")
     return nfts_unsort
 
 def sort(nfts_unsort):
@@ -72,6 +80,7 @@ def sort(nfts_unsort):
     with open(FILE_PATH, 'w') as file:
         json.dump(last_nfts, file, indent=2)
 
+    print("log: sort ok")
     return nfts_sort
 
 def notification(nfts_sort):
@@ -84,6 +93,7 @@ def notification(nfts_sort):
         }
         r = requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data)
         sleep(1)
+        print("log: notification ok")
     return 
 
 def create_json():
